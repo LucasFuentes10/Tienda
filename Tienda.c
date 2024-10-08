@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h> // Para usar funciones de manejo de cadenas
 
 #define MAX_PRODUCTOS 5  // Definir constante para el número máximo de productos
 
@@ -16,8 +17,8 @@ typedef struct {
     float precio;
     union {
         char fecha_caducidad[11];  // Para Alimentos (dd/mm/yyyy)
-        char talla[5];             // Para Ropa (S, M, L, etc.)
-        int garantia_meses;        // Para Electrónica (en meses)
+        char talla[5];              // Para Ropa (S, M, L, etc.)
+        int garantia_meses;         // Para Electrónica (en meses)
     } detalle;
 } Producto;
 
@@ -25,6 +26,7 @@ typedef struct {
 void agregarProducto(Producto productos[], int *num_productos);
 void mostrarProductos(Producto productos[], int num_productos);
 float calcularValorTotal(Producto productos[], int num_productos);
+void mostrarPorCategoria(Producto productos[], int num_productos);
 
 int main() {
     Producto productos[MAX_PRODUCTOS];
@@ -36,7 +38,8 @@ int main() {
         printf("1. Agregar producto\n");
         printf("2. Mostrar productos\n");
         printf("3. Calcular valor total del inventario\n");
-        printf("4. Salir\n");
+        printf("4. Mostrar productos por categoría\n");
+        printf("5. Salir\n");
         printf("Seleccione una opción: ");
         scanf("%d", &opcion);
 
@@ -51,12 +54,15 @@ int main() {
                 printf("El valor total del inventario es: $%.2f\n", calcularValorTotal(productos, num_productos));
                 break;
             case 4:
+                mostrarPorCategoria(productos, num_productos);
+                break;
+            case 5:
                 printf("Saliendo...\n");
                 break;
             default:
                 printf("Opción no válida. Intente de nuevo.\n");
         }
-    } while (opcion != 4);
+    } while (opcion != 5);
 
     return 0;
 }
@@ -96,6 +102,9 @@ void agregarProducto(Producto productos[], int *num_productos) {
             printf("Ingrese la garantía en meses: ");
             scanf("%d", &nuevo_producto.detalle.garantia_meses);
             break;
+        default:
+            printf("Categoría no válida.\n");
+            return;
     }
 
     productos[*num_productos] = nuevo_producto;
@@ -139,4 +148,50 @@ float calcularValorTotal(Producto productos[], int num_productos) {
         valor_total += productos[i].precio;
     }
     return valor_total;
+}
+
+// Subprograma para mostrar productos por categoría
+void mostrarPorCategoria(Producto productos[], int num_productos) {
+    if (num_productos == 0) {
+        printf("No hay productos en la tienda.\n");
+        return;
+    }
+
+    int categoria;
+    printf("Seleccione la categoría a mostrar (0: Alimentos, 1: Ropa, 2: Electrónica): ");
+    scanf("%d", &categoria);
+
+    // Validar que la categoría ingresada esté dentro del rango válido
+    if (categoria < 0 || categoria > 2) {
+        printf("Categoría no válida. Por favor, seleccione un número entre 0 y 2.\n");
+        return;
+    }
+
+    int encontrado = 0; // Variable para verificar si se encontró al menos un producto
+    for (int i = 0; i < num_productos; i++) {
+        if (productos[i].categoria == categoria) {
+            if (!encontrado) {
+                printf("\n--- Productos en la categoría seleccionada ---\n");
+                encontrado = 1; // Marca que se encontró al menos un producto
+            }
+            printf("\nProducto %d\n", i + 1);
+            printf("Nombre: %s\n", productos[i].nombre);
+            printf("Precio: $%.2f\n", productos[i].precio);
+            switch (productos[i].categoria) {
+                case ALIMENTOS:
+                    printf("Fecha de caducidad: %s\n", productos[i].detalle.fecha_caducidad);
+                    break;
+                case ROPA:
+                    printf("Talla: %s\n", productos[i].detalle.talla);
+                    break;
+                case ELECTRONICA:
+                    printf("Garantía: %d meses\n", productos[i].detalle.garantia_meses);
+                    break;
+            }
+        }
+    }
+
+    if (!encontrado) {
+        printf("No se encontraron productos en la categoría seleccionada.\n");
+    }
 }
