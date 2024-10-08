@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#define MAX_PRODUCTOS 5  // Definir constante para el número máximo de productos
+#define MAX_PRODUCTOS 5  
 
-// Enumeración para las categorías
+
 typedef enum {
     ALIMENTOS,
     ROPA,
@@ -21,7 +21,7 @@ typedef struct {
     } detalle;
 } Producto;
 
-// Declaración de los subprogramas
+
 void agregarProducto(Producto productos[], int *num_productos);
 void mostrarProductos(Producto productos[], int num_productos);
 float calcularValorTotal(Producto productos[], int num_productos);
